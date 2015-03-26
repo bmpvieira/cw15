@@ -64,7 +64,7 @@
 <span class="fragment">import xml.etree.ElementTree as ET</span>
 <span class="fragment">from Bio import Entrez</span>
 <span class="fragment">Entrez.email = "mail@bmpvieira.com"</span>
-<span class="fragment">esearch_handle = Entrez.esearch(db="assembly", term="Achromyrmex")</span>
+<span class="fragment">esearch_handle = Entrez.esearch(db="assembly", term="Acromyrmex")</span>
 <span class="fragment">esearch_record = Entrez.read(esearch_handle)</span>
 <span class="fragment">for id in esearch_record['IdList']:</span>
 <span class="fragment">  esummary_handle = Entrez.esummary(db="assembly", id=id)</span>
