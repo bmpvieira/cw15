@@ -33,38 +33,30 @@
 
 ---
 
-### Collaborates with
+### Collaborations and Reusability
 
-<div class="fragment" style="float: left; padding-right:2em; width:40%;">
-<a href="http://dat-data.com" target="_blank">Dat-data.com</a>
+<div class="" style="float: left; padding-right:2em; width:20%;">
 <img style="width:100%;" alt="dat" src="img/dat.png" />
+<a href="http://dat-data.com" target="_blank">Dat-data.com</a>
 </div>
 
-<div class="fragment" style="float: left; padding-right:2em; width:40%;">
-<a href="http://biojs.net" target="_blank">BioJS.net</a>
+<div class="" style="float: left; padding-right:2em; width:20%;">
 <img style="width:100%;" alt="biojs" src="img/biojs.png" />
+<a href="http://biojs.net" target="_blank">BioJS.net</a>
 </div>
 
----
-
-** Need to reimplement the same code on browser and server. **
-
-Solution: JavaScript everywhere
-
-* [Afra](http://afra.sbcs.qmul.ac.uk) <span class="fragment">-> [bionode-seq]() </span>
-* [GeneValidator](http://genevalidator.sbcs.qmul.ac.uk) <span class="fragment">-> [bionode-seq](https://github.com/bionode/bionode-seq) and [fasta](https://github.com/bionode/bionode-fasta)</span>
-* [SequenceServer](http://www.sequenceserver.com) <span class="fragment"> -> soon</span>
-* [BioJS](http://biojs.net) <span class="fragment"> -> [collaborating for code reuse](http://github.com/bionode/bionode/issues/9)</span>
-* [Biodalliance](http://www.biodalliance.org) <span class="fragment">-> [converting to bionode](https://github.com/bionode/bionode-bbi)</span>
-* [GeeFuTu](https://github.com/wookoouk/GeeFuTu) <span class="fragment"> -> converting to bionode</span>
-* [Dat](https://dat-data.com) <span class="fragment"> -> easy integration with bionode</span>
+* [Afra](http://afra.sbcs.qmul.ac.uk)
+* [GeneValidator](http://genevalidator.sbcs.qmul.ac.uk)
+* [SequenceServer](http://www.sequenceserver.com)
+* [Biodalliance](http://www.biodalliance.org)
+* [GeeFuTu](https://github.com/wookoouk/GeeFuTu)
 
 ---
 
 ** Difficulty getting relevant description and datasets from NCBI API using bio* libs **
 
 <div class="fragment">
-<p><strong>Python example:</strong> URL for the Achromyrmex assembly?</p>
+<p><strong>Python example:</strong> URL for the Acromyrmex assembly?</p>
 <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA_000188075.1_Si_gnG"><pre>ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA_000188075.1_Si_gnG</pre></a>
 </div>
 
@@ -91,19 +83,21 @@ Solution: <a href="http://github.com/bionode/bionode-ncbi">bionode-ncbi</a>
 
 ---
 
-** Difficulty getting relevant description and datasets from NCBI API using bio* libs **
+** Better way with Bionode - 4 approaches **
 
 <p class="fragment">JavaScript</p>
 <pre class="fragment">
 <span class="fragment">var bio = require('bionode')</span>
 </pre>
 <pre class="fragment">
+<span class="fragment">//Callback pattern</span>
 <span class="fragment">bio.ncbi.urls('assembly', 'Acromyrmex', function(urls) {</span>
 <span class="fragment">  console.log(urls[0].genomic.fna)</span>
 <span class="fragment">})</span>
 </pre>
 
 <pre class="fragment">
+<span class="fragment">//Event pattern</span>
 <span class="fragment">bio.ncbi.urls('assembly', 'Acromyrmex').on('data', printGenomeURL)</span>
 <span class="fragment">function printGenomeURL(url) {</span>
 <span class="fragment">  console.log(url.genomic.fna)</span>
@@ -111,6 +105,7 @@ Solution: <a href="http://github.com/bionode/bionode-ncbi">bionode-ncbi</a>
 </pre>
 
 <pre class="fragment">
+<span class="fragment">//Pipe pattern</span>
 <span class="fragment">var tool = require('tool-stream')</span>
 <span class="fragment">bio.ncbi.urls('assembly', 'Acromyrmex')</span>
 <span class="fragment">.pipe(tool.extractProperty('genomic.fna'))</span>
@@ -118,30 +113,13 @@ Solution: <a href="http://github.com/bionode/bionode-ncbi">bionode-ncbi</a>
 </pre>
 
 <p class="fragment">BASH</p>
-<pre class="fragment">
-<span class="fragment">bionode ncbi urls assembly Acromyrmex | \
-tool-stream extractProperty genomic.fna</span>
+<pre style="font-size:.5em;" class="fragment">
+<span class="fragment">bionode ncbi urls assembly Acromyrmex | tool-stream extractProperty genomic.fna</span>
 </pre>
 
 ---
 
-<!-- **Difficulty writing scalable, reproducible and complex bioinformatic pipelines.**
-
-Solution: Node.js Streams everywhere
-
-<pre>
-var ncbi = require('bionode-ncbi')
-var tool = require('tool-stream')
-var through = require('through2')
-var fork1 = through.obj()
-var fork2 = through.obj()
-</pre>
-
---- -->
-
-**Difficulty writing scalable, reproducible and complex bioinformatic pipelines.**
-
-Solution: Node.js Streams everywhere
+**Complex pipelines with forks**
 
 <pre>
 <span class="">ncbi</span>
@@ -187,74 +165,174 @@ Search GitHub for
 
 ---
 
+### Install Node.js and Bionode
 
-### Node.js online
+```bash
+ # Mac
+  brew install n
+  n stable
+```
 
+```bash
+ # Ubuntu
+  sudo apt-get install npm
+  npm install -g n
+  n stable
+```
+
+```bash
+ # Windows
+  Go to http://nodejs.org
+```
+
+#### Online
 [try.bionode.io](http://try.bionode.io)  
 [bit.ly/try-dat](http://bit.ly/try-dat)
 
-<a href="http://maxogden.github.io/get-dat" target="_blank"><img style="padding-left: 5%; width: 100%; float: left;" alt="get-dat" src="img/datworkshop.png" /></a>
-
----
-
-### Install Node.js
-
-#### Mac
+#### Install bionode and json parser
 ```bash
-brew install node
+npm install -g bionode-ncbi bionode-fasta json
 ```
-
-#### Ubuntu
-```bash
-sudo apt-get install npm
-```
-
-#### Windows
-```bash
-Go to http://nodejs.org
-```
-
-#### Manage versions and get latest stable
-```bash
-npm install -g n
- n stable
-```
-
----
-
-### Bionode examples
-<span class="fragment">(slow, don't do!)</span>
-
-<code class="fragment">npm install -g bionode</code><br>
-<code class="fragment">bionode ncbi download gff bacteria</code>
-<code class="fragment">bionode ncbi download sra arthropoda | bionode sra fastq-dump</code><br>
-<code class="fragment">npm install -g dat</code><br>
-<code class="fragment">dat init</code><br>
-<code class="fragment">bionode ncbi search assembly formicidae | dat import --json</code><br>
 
 ---
 
 <pre style="font-size:.65em;">
- npm i -g bionode-ncbi bionode-fasta json
  bionode-ncbi search genome spiders
  bionode-ncbi search genome spiders | wc
  bionode-ncbi search genome spiders | head -n 1 | json
  bionode-ncbi search genome spiders | json -ga organism_name
-
- bionode-ncbi search genome spiders | \
- json -ga uid | \
- bionode-ncbi link genome pubmed - | \
- json -ga destUID | \
- bionode-ncbi search pubmed - | \
- json -ga title
-
- bionode-ncbi download assembly Guillardia theta | \
- json -ga -c 'this.status === "completed"' | \
- json -ga path | \
- bionode-fasta -f | \
- json -ga -c 'this.seq.length > 10000' | \
- bionode-fasta --write > gtheta-big-scaffolds.fasta
 </pre>
+
+ <pre style="font-size:.65em;">
+  bionode-ncbi search genome spiders | \
+    json -ga uid | \
+      bionode-ncbi link genome pubmed - | \
+        json -ga destUID | \
+          bionode-ncbi search pubmed - | \
+            json -ga title
+</pre>
+
+ <pre style="font-size:.65em;">
+  bionode-ncbi download assembly Guillardia theta | \
+    json -ga -c 'this.status === "completed"' | \
+      json -ga path | \
+        bionode-fasta -f | \
+          json -ga -c 'this.seq.length > 10000' | \
+            bionode-fasta --write > gtheta-big-scaffolds.fasta
+</pre>
+
+---
+
+### How to write a Stream?
+
+```javascript
+ var through = require('through2')
+  var stream = through2.obj(transform)
+  function transform (obj, enc, next) {
+    // do things, example:
+    obj.name = obj.name.toUpperCase()
+    // Push downstream
+    this.push(obj)
+    // Callback to fetch next object
+    next()
+  }
+```
+
+---
+
+### How to write a Stream?
+
+```javascript
+var through = require('through2')
+ var stream = through2.obj(transform)
+ function transform (obj, enc, next) {
+   // do things, example:
+   var self = this
+   requestSomethingFromDB(obj.name, function(data) {
+     obj.data = data
+     self.push(obj)
+     next()
+   })
+ }
+```
+
+---
+
+Bash
+```bash
+ mkdir project
+  cd project
+  npm install bionode-ncbi through2
+```
+
+JavaScript
+<pre class="">
+  var ncbi = require('bionode-ncbi')
+  var through = require('through2')
+  var json = require('ndjson')
+
+  var myStream = through.obj(transform)
+  function transform (obj, enc, next) {
+    var result = {
+      specie: obj.organism,
+      organisazation: obj.meta['submitter-organization']
+    }
+    this.push(result)
+    next()
+  }
+
+  ncbi.search('assembly', 'spiders')
+  .pipe(myStream)
+  .pipe(json.stringify())
+  .pipe(process.stdout)
+  </pre>
+
+---
+
+### JavaScript Events and Styles
+<pre class="">
+  var counter = 0
+  myStream
+  .on('data', function (data) {
+    counter++
+  })
+  .on('end', function () {
+    console.log('Processed ' + counter)
+  })
+
+</pre>
+
+<pre class="">
+  var counter = 0
+
+  var count = function (data) {
+    counter++
+  }
+
+  var log = function () {
+    console.log('Processed ' + counter)
+  }
+
+  myStream.on('data', count).on('end', log)
+
+
+</pre>
+
+---
+
+Bionode
+* [bionode.io](http://bionode.io)  
+* [doc.bionode.io](http://doc.bionode.io)  
+* [github.com/bionode/bionode](https://github.com/bionode/bionode)
+* [twitter.com/bionode](http://twitter.com/bionode)
+
+Hackday
+* [bit.ly/biocw15](http://bit.ly/biocw15)
+
+
+
+---
+&nbsp;
 
 ---
 
@@ -303,7 +381,7 @@ Same code client/server side
 
 ---
 
-**Difficulty writing scalable, reproducible and complex bioinformatic pipelines.**
+**CoffeeScript pipeline and a new format?**
 
 <pre>
 <span class="fragment">ncbi.search 'genome', 'rodentia'</span>
@@ -336,7 +414,7 @@ pipeline1
 
 ---
 
-**Difficulty writing scalable, reproducible and complex bioinformatic pipelines.**
+**Pipelines and alternatives to Makefiles?**
 
 * [bionode-example-dat-gasket](https://github.com/bionode/bionode-example-dat-gasket)
 * [get-dat bionode gasket example](https://github.com/maxogden/get-dat/blob/5e8cee31b5dc34e5f1b09fd0a21cf1e6ee9a17f5/markdown/07-extra-credit.md)

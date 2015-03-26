@@ -47,37 +47,30 @@
 </section>
 
 <section>
-<h3 id="collaborates-with">Collaborates with</h3>
-<div class="fragment" style="float: left; padding-right:2em; width:40%;">
-<a href="http://dat-data.com" target="_blank">Dat-data.com</a>
+<h3 id="collaborations-and-reusability">Collaborations and Reusability</h3>
+<div class="" style="float: left; padding-right:2em; width:20%;">
 <img style="width:100%;" alt="dat" src="img/dat.png" />
+<a href="http://dat-data.com" target="_blank">Dat-data.com</a>
 </div>
 
-<div class="fragment" style="float: left; padding-right:2em; width:40%;">
-<a href="http://biojs.net" target="_blank">BioJS.net</a>
+<div class="" style="float: left; padding-right:2em; width:20%;">
 <img style="width:100%;" alt="biojs" src="img/biojs.png" />
+<a href="http://biojs.net" target="_blank">BioJS.net</a>
 </div>
 
-</section>
-
-<section>
-<p><strong> Need to reimplement the same code on browser and server. </strong></p>
-<p>Solution: JavaScript everywhere</p>
 <ul>
-<li><a href="http://afra.sbcs.qmul.ac.uk">Afra</a> <span class="fragment">-&gt; <a href="">bionode-seq</a> </span></li>
-<li><a href="http://genevalidator.sbcs.qmul.ac.uk">GeneValidator</a> <span class="fragment">-&gt; <a href="https://github.com/bionode/bionode-seq">bionode-seq</a> and <a href="https://github.com/bionode/bionode-fasta">fasta</a></span></li>
-<li><a href="http://www.sequenceserver.com">SequenceServer</a> <span class="fragment"> -&gt; soon</span></li>
-<li><a href="http://biojs.net">BioJS</a> <span class="fragment"> -&gt; <a href="http://github.com/bionode/bionode/issues/9">collaborating for code reuse</a></span></li>
-<li><a href="http://www.biodalliance.org">Biodalliance</a> <span class="fragment">-&gt; <a href="https://github.com/bionode/bionode-bbi">converting to bionode</a></span></li>
-<li><a href="https://github.com/wookoouk/GeeFuTu">GeeFuTu</a> <span class="fragment"> -&gt; converting to bionode</span></li>
-<li><a href="https://dat-data.com">Dat</a> <span class="fragment"> -&gt; easy integration with bionode</span></li>
+<li><a href="http://afra.sbcs.qmul.ac.uk">Afra</a></li>
+<li><a href="http://genevalidator.sbcs.qmul.ac.uk">GeneValidator</a></li>
+<li><a href="http://www.sequenceserver.com">SequenceServer</a></li>
+<li><a href="http://www.biodalliance.org">Biodalliance</a></li>
+<li><a href="https://github.com/wookoouk/GeeFuTu">GeeFuTu</a></li>
 </ul>
 </section>
 
 <section>
 <p><strong> Difficulty getting relevant description and datasets from NCBI API using bio* libs </strong></p>
 <div class="fragment">
-<p><strong>Python example:</strong> URL for the Achromyrmex assembly?</p>
+<p><strong>Python example:</strong> URL for the Acromyrmex assembly?</p>
 <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA_000188075.1_Si_gnG"><pre>ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA_000188075.1_Si_gnG</pre></a>
 </div>
 
@@ -104,18 +97,20 @@ Solution: <a href="http://github.com/bionode/bionode-ncbi">bionode-ncbi</a>
 </section>
 
 <section>
-<p><strong> Difficulty getting relevant description and datasets from NCBI API using bio* libs </strong></p>
+<p><strong> Better way with Bionode - 4 approaches </strong></p>
 <p><p class="fragment">JavaScript</p></p>
 <pre class="fragment">
 <span class="fragment">var bio = require('bionode')</span>
 </pre>
 <pre class="fragment">
+<span class="fragment">//Callback pattern</span>
 <span class="fragment">bio.ncbi.urls('assembly', 'Acromyrmex', function(urls) {</span>
 <span class="fragment">  console.log(urls[0].genomic.fna)</span>
 <span class="fragment">})</span>
 </pre>
 
 <pre class="fragment">
+<span class="fragment">//Event pattern</span>
 <span class="fragment">bio.ncbi.urls('assembly', 'Acromyrmex').on('data', printGenomeURL)</span>
 <span class="fragment">function printGenomeURL(url) {</span>
 <span class="fragment">  console.log(url.genomic.fna)</span>
@@ -123,6 +118,7 @@ Solution: <a href="http://github.com/bionode/bionode-ncbi">bionode-ncbi</a>
 </pre>
 
 <pre class="fragment">
+<span class="fragment">//Pipe pattern</span>
 <span class="fragment">var tool = require('tool-stream')</span>
 <span class="fragment">bio.ncbi.urls('assembly', 'Acromyrmex')</span>
 <span class="fragment">.pipe(tool.extractProperty('genomic.fna'))</span>
@@ -130,29 +126,14 @@ Solution: <a href="http://github.com/bionode/bionode-ncbi">bionode-ncbi</a>
 </pre>
 
 <p><p class="fragment">BASH</p></p>
-<pre class="fragment">
-<span class="fragment">bionode ncbi urls assembly Acromyrmex | \
-tool-stream extractProperty genomic.fna</span>
+<pre style="font-size:.5em;" class="fragment">
+<span class="fragment">bionode ncbi urls assembly Acromyrmex | tool-stream extractProperty genomic.fna</span>
 </pre>
 
 </section>
 
 <section>
-<!-- **Difficulty writing scalable, reproducible and complex bioinformatic pipelines.**
-
-Solution: Node.js Streams everywhere
-
-<pre>
-var ncbi = require('bionode-ncbi')
-var tool = require('tool-stream')
-var through = require('through2')
-var fork1 = through.obj()
-var fork2 = through.obj()
-</pre>
-
---- -->
-<p><strong>Difficulty writing scalable, reproducible and complex bioinformatic pipelines.</strong></p>
-<p>Solution: Node.js Streams everywhere</p>
+<p><strong>Complex pipelines with forks</strong></p>
 <pre>
 <span class="">ncbi</span>
 <span class="">.search('sra', 'Solenopsis invicta')</span>
@@ -199,62 +180,163 @@ Search GitHub for
 </section>
 
 <section>
-<h3 id="node-js-online">Node.js online</h3>
+<h3 id="install-node-js-and-bionode">Install Node.js and Bionode</h3>
+<pre><code class="lang-bash"> # Mac
+  brew install n
+  n stable
+</code></pre>
+<pre><code class="lang-bash"> # Ubuntu
+  sudo apt-get install npm
+  npm install -g n
+  n stable
+</code></pre>
+<pre><code class="lang-bash"> # Windows
+  Go to http://nodejs.org
+</code></pre>
+<h4 id="online">Online</h4>
 <p><a href="http://try.bionode.io">try.bionode.io</a><br><a href="http://bit.ly/try-dat">bit.ly/try-dat</a></p>
-<p><a href="http://maxogden.github.io/get-dat" target="_blank"><img style="padding-left: 5%; width: 100%; float: left;" alt="get-dat" src="img/datworkshop.png" /></a></p>
-</section>
-
-<section>
-<h3 id="install-node-js">Install Node.js</h3>
-<h4 id="mac">Mac</h4>
-<pre><code class="lang-bash">brew install node
+<h4 id="install-bionode-and-json-parser">Install bionode and json parser</h4>
+<pre><code class="lang-bash">npm install -g bionode-ncbi bionode-fasta json
 </code></pre>
-<h4 id="ubuntu">Ubuntu</h4>
-<pre><code class="lang-bash">sudo apt-get install npm
-</code></pre>
-<h4 id="windows">Windows</h4>
-<pre><code class="lang-bash">Go to http://nodejs.org
-</code></pre>
-<h4 id="manage-versions-and-get-latest-stable">Manage versions and get latest stable</h4>
-<pre><code class="lang-bash">npm install -g n
- n stable
-</code></pre>
-</section>
-
-<section>
-<h3 id="bionode-examples">Bionode examples</h3>
-<p><span class="fragment">(slow, don&#39;t do!)</span></p>
-<p><code class="fragment">npm install -g bionode</code><br>
-<code class="fragment">bionode ncbi download gff bacteria</code>
-<code class="fragment">bionode ncbi download sra arthropoda | bionode sra fastq-dump</code><br>
-<code class="fragment">npm install -g dat</code><br>
-<code class="fragment">dat init</code><br>
-<code class="fragment">bionode ncbi search assembly formicidae | dat import --json</code><br></p>
 </section>
 
 <section>
 <pre style="font-size:.65em;">
- npm i -g bionode-ncbi bionode-fasta json
  bionode-ncbi search genome spiders
  bionode-ncbi search genome spiders | wc
  bionode-ncbi search genome spiders | head -n 1 | json
  bionode-ncbi search genome spiders | json -ga organism_name
-
- bionode-ncbi search genome spiders | \
- json -ga uid | \
- bionode-ncbi link genome pubmed - | \
- json -ga destUID | \
- bionode-ncbi search pubmed - | \
- json -ga title
-
- bionode-ncbi download assembly Guillardia theta | \
- json -ga -c 'this.status === "completed"' | \
- json -ga path | \
- bionode-fasta -f | \
- json -ga -c 'this.seq.length > 10000' | \
- bionode-fasta --write > gtheta-big-scaffolds.fasta
 </pre>
 
+ <pre style="font-size:.65em;">
+  bionode-ncbi search genome spiders | \
+    json -ga uid | \
+      bionode-ncbi link genome pubmed - | \
+        json -ga destUID | \
+          bionode-ncbi search pubmed - | \
+            json -ga title
+</pre>
+
+ <pre style="font-size:.65em;">
+  bionode-ncbi download assembly Guillardia theta | \
+    json -ga -c 'this.status === "completed"' | \
+      json -ga path | \
+        bionode-fasta -f | \
+          json -ga -c 'this.seq.length > 10000' | \
+            bionode-fasta --write > gtheta-big-scaffolds.fasta
+</pre>
+
+</section>
+
+<section>
+<h3 id="how-to-write-a-stream-">How to write a Stream?</h3>
+<pre><code class="lang-javascript"> var through = require(&#39;through2&#39;)
+  var stream = through2.obj(transform)
+  function transform (obj, enc, next) {
+    // do things, example:
+    obj.name = obj.name.toUpperCase()
+    // Push downstream
+    this.push(obj)
+    // Callback to fetch next object
+    next()
+  }
+</code></pre>
+</section>
+
+<section>
+<h3 id="how-to-write-a-stream-">How to write a Stream?</h3>
+<pre><code class="lang-javascript">var through = require(&#39;through2&#39;)
+ var stream = through2.obj(transform)
+ function transform (obj, enc, next) {
+   // do things, example:
+   var self = this
+   requestSomethingFromDB(obj.name, function(data) {
+     obj.data = data
+     self.push(obj)
+     next()
+   })
+ }
+</code></pre>
+</section>
+
+<section>
+<p>Bash</p>
+<pre><code class="lang-bash"> mkdir project
+  cd project
+  npm install bionode-ncbi through2
+</code></pre>
+<p>JavaScript</p>
+<pre class="">
+  var ncbi = require('bionode-ncbi')
+  var through = require('through2')
+  var json = require('ndjson')
+
+  var myStream = through.obj(transform)
+  function transform (obj, enc, next) {
+    var result = {
+      specie: obj.organism,
+      organisazation: obj.meta['submitter-organization']
+    }
+    this.push(result)
+    next()
+  }
+
+  ncbi.search('assembly', 'spiders')
+  .pipe(myStream)
+  .pipe(json.stringify())
+  .pipe(process.stdout)
+  </pre>
+
+</section>
+
+<section>
+<h3 id="javascript-events-and-styles">JavaScript Events and Styles</h3>
+<pre class="">
+  var counter = 0
+  myStream
+  .on('data', function (data) {
+    counter++
+  })
+  .on('end', function () {
+    console.log('Processed ' + counter)
+  })
+
+</pre>
+
+<pre class="">
+  var counter = 0
+
+  var count = function (data) {
+    counter++
+  }
+
+  var log = function () {
+    console.log('Processed ' + counter)
+  }
+
+  myStream.on('data', count).on('end', log)
+
+
+</pre>
+
+</section>
+
+<section>
+<p>Bionode</p>
+<ul>
+<li><a href="http://bionode.io">bionode.io</a>  </li>
+<li><a href="http://doc.bionode.io">doc.bionode.io</a>  </li>
+<li><a href="https://github.com/bionode/bionode">github.com/bionode/bionode</a></li>
+<li><a href="http://twitter.com/bionode">twitter.com/bionode</a></li>
+</ul>
+<p>Hackday</p>
+<ul>
+<li><a href="http://bit.ly/biocw15">bit.ly/biocw15</a></li>
+</ul>
+</section>
+
+<section>
+<p>&nbsp;</p>
 </section>
 
 <section data-state=title>
@@ -300,7 +382,7 @@ Search GitHub for
 </section>
 
 <section>
-<p><strong>Difficulty writing scalable, reproducible and complex bioinformatic pipelines.</strong></p>
+<p><strong>CoffeeScript pipeline and a new format?</strong></p>
 <pre>
 <span class="fragment">ncbi.search 'genome', 'rodentia'</span>
 <span class="fragment">.pipe ncbi.expand 'assembly'</span>
@@ -333,7 +415,7 @@ pipeline1
 </section>
 
 <section>
-<p><strong>Difficulty writing scalable, reproducible and complex bioinformatic pipelines.</strong></p>
+<p><strong>Pipelines and alternatives to Makefiles?</strong></p>
 <ul>
 <li><a href="https://github.com/bionode/bionode-example-dat-gasket">bionode-example-dat-gasket</a></li>
 <li><a href="https://github.com/maxogden/get-dat/blob/5e8cee31b5dc34e5f1b09fd0a21cf1e6ee9a17f5/markdown/07-extra-credit.md">get-dat bionode gasket example</a></li>
